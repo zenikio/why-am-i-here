@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Why Am I Here",
+  "version": "0.1.0",
+  "description": "Asks why you're here before distracting sites load, shows your reason while you browse, and checks in when your time is up.",
+  "permissions": ["storage"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    { "matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_start", "all_frames": false }
+  ],
+  "action": { "default_title": "Why Am I Here history" },
+  "options_page": "history.html"
+}
