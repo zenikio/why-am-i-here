@@ -12,11 +12,14 @@
   let shadow = null;
   let mode = null;     // "gate" | "banner" | "overtime" | "outcome"
   let pauser = null;
+  let bannerPos = null; // {x, y} in px from top-left, once the user drags it
+  let dragging = false;
 
   const store = chrome.storage.local;
 
   async function init() {
-    const { sites = DEFAULT_SITES } = await store.get("sites");
+    const { sites = DEFAULT_SITES, bannerPos: bp = null } = await store.get(["sites", "bannerPos"]);
+    bannerPos = bp;
     site = sites.find((s) => host === s || host.endsWith("." + s));
     if (!site) return;
     chrome.storage.onChanged.addListener((c, area) => {
@@ -138,6 +141,7 @@
   }
 
   function showBanner(s, elapsedMin) {
+    if (dragging) return;
     mode = "banner";
     stopPausing();
     clearUI();
@@ -150,7 +154,41 @@
       el("span", { className: "left", textContent: `${left}m left` }),
       done
     );
+    placeBanner(bar);
+    makeDraggable(bar);
     shadow.append(bar);
+  }
+
+  function placeBanner(bar) {
+    if (!bannerPos) return; // default: bottom-left via CSS
+    const x = Math.min(Math.max(0, bannerPos.x), window.innerWidth - 80);
+    const y = Math.min(Math.max(0, bannerPos.y), window.innerHeight - 40);
+    bar.style.left = x + "px";
+    bar.style.top = y + "px";
+    bar.style.bottom = "auto";
+  }
+
+  function makeDraggable(bar) {
+    bar.title = "Drag to move";
+    bar.addEventListener("mousedown", (e) => {
+      if (e.target.tagName === "BUTTON") return;
+      e.preventDefault();
+      dragging = true;
+      const r = bar.getBoundingClientRect();
+      const dx = e.clientX - r.left, dy = e.clientY - r.top;
+      const move = (ev) => {
+        bannerPos = { x: ev.clientX - dx, y: ev.clientY - dy };
+        placeBanner(bar);
+      };
+      const up = async () => {
+        document.removeEventListener("mousemove", move, true);
+        document.removeEventListener("mouseup", up, true);
+        dragging = false;
+        await store.set({ bannerPos });
+      };
+      document.addEventListener("mousemove", move, true);
+      document.addEventListener("mouseup", up, true);
+    });
   }
 
   function showOvertime(s, elapsedMin) {
@@ -208,7 +246,7 @@
     .primary{background:#5b7cfa;border-color:#5b7cfa;color:#fff}
     .ghost{background:transparent;color:#ddd}
     .err{color:#ff7b7b;font-size:13px;margin-top:8px;min-height:1em}
-    .banner{position:fixed;top:10px;right:10px;max-width:min(420px,80vw);display:flex;gap:8px;align-items:center;
+    .banner{position:fixed;bottom:14px;left:14px;cursor:grab;user-select:none;max-width:min(420px,80vw);display:flex;gap:8px;align-items:center;
       background:#1b1b22ee;color:#eee;padding:7px 10px;border-radius:999px;font-size:13px;pointer-events:auto;
       box-shadow:0 2px 12px #0006;border:1px solid #33333f}
     .lbl{color:#9a9aa8} .why{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

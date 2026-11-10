@@ -2,12 +2,28 @@
   "manifest_version": 3,
   "name": "Why Am I Here",
   "version": "0.1.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsg7lN6inqWXNtIdLeLTRV5rdAZU27cDmh2O4Cghpke1rZDCihc0QEa0zGS7Kj9TqKPrJ5/y4mSyxU631gFZoPuMuhCggVNHS6dd4r+z0MJSHXr38wE57ehvr0ZdGyTXyigYZA2BNIpC7QCkecalhIm+nSgdN2+7++TqYzCFOM8gh4s/5AklEvmlFaN+L+/SZmaCDEhAJb2efULLItaN/x5m6p1Y5/YWUqK94rf5VeyWhj4e0vO5QkjVbRYDJprpLL6bUdJHRl7aV/48s/bzjLfeeIkTV9zYPIDzxM8/yYLsfeY3XQGTYsVH3R7eUrnamS35EfH+OUJnscBVg8KBlEwIDAQAB",
   "description": "Asks why you're here before distracting sites load, shows your reason while you browse, and checks in when your time is up.",
-  "permissions": ["storage"],
-  "background": { "service_worker": "background.js" },
-  "content_scripts": [
-    { "matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_start", "all_frames": false }
+  "permissions": [
+    "storage"
   ],
-  "action": { "default_title": "Why Am I Here history" },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "action": {
+    "default_title": "Why Am I Here history"
+  },
   "options_page": "history.html"
 }
