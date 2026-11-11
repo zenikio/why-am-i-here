@@ -23,7 +23,8 @@
     }
   ],
   "action": {
-    "default_title": "Why Am I Here history"
+    "default_title": "Why Am I Here",
+    "default_popup": "popup.html"
   },
   "options_page": "history.html"
 }

@@ -14,6 +14,13 @@
 </style></head><body>
 <h1>Why Am I Here</h1><div class="sub">Why you actually went there.</div>
 <div class="stats" id="stats"></div>
+<h2>Time</h2>
+<p class="sub" style="margin:0 0 12px">Active time only: tab visible, window focused, and you're interacting or watching. Background tabs don't count.</p>
+<div style="margin-bottom:12px"><label>Day: <input type="date" id="day"></label> <b id="daytotal" style="margin-left:12px"></b></div>
+<div id="daybars" style="margin-bottom:24px"></div>
+<h3 style="font-size:14px;margin:0 0 8px">Last 7 days</h3>
+<div id="week" style="display:flex;gap:10px;align-items:flex-end;height:170px;margin-bottom:8px"></div>
+<div id="legend" style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px"></div>
 <h2>History</h2>
 <table><thead><tr><th>When</th><th>Site</th><th>Reason</th><th>Planned</th><th>Actual</th><th>Did it?</th></tr></thead><tbody id="rows"></tbody></table>
 <h2>Watched sites</h2>

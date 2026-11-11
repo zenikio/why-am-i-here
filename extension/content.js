@@ -26,6 +26,7 @@
       if (area === "local" && c.sessions) render();
     });
     setInterval(tick, TICK_MS);
+    trackAttention();
     document.addEventListener("visibilitychange", () => { if (!document.hidden) tick(); });
     render();
   }
@@ -60,6 +61,53 @@
     if (!s) return render();
     s.last = Date.now();
     await setSession(s); // triggers render via storage listener
+  }
+
+  // ---------- time tracking (active attention only) ----------
+  // Counts time only while the tab is visible, the window is focused, and you're
+  // interacting (or a video is playing). Background tabs add nothing.
+  const INPUT_WINDOW_MS = 60 * 1000;
+  const SAMPLE_MS = 5 * 1000;
+  const FLUSH_MS = 30 * 1000;
+  let lastInput = 0;
+  let lastSample = Date.now();
+  let pendingMs = 0;
+
+  function dayKey(d = new Date()) {
+    const p = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  function mediaPlaying() {
+    return [...document.querySelectorAll("video,audio")].some((m) => !m.paused && !m.ended && m.readyState > 2);
+  }
+
+  function trackAttention() {
+    ["mousemove", "keydown", "scroll", "click", "wheel", "touchstart"].forEach((e) =>
+      window.addEventListener(e, () => { lastInput = Date.now(); }, { passive: true, capture: true }));
+    setInterval(sample, SAMPLE_MS);
+    setInterval(flush, FLUSH_MS);
+    document.addEventListener("visibilitychange", () => { sample(); if (document.hidden) flush(); });
+    window.addEventListener("pagehide", flush);
+  }
+
+  function sample() {
+    const now = Date.now();
+    const delta = Math.min(now - lastSample, SAMPLE_MS * 2);
+    lastSample = now;
+    if (mode === "gate") return; // not browsing yet, still answering the prompt
+    if (document.hidden || !document.hasFocus()) return;
+    if (now - lastInput < INPUT_WINDOW_MS || mediaPlaying()) pendingMs += delta;
+  }
+
+  async function flush() {
+    if (!site || pendingMs < 1000) return;
+    const secs = Math.round(pendingMs / 1000);
+    pendingMs = 0;
+    const { time = {} } = await store.get("time");
+    const day = time[dayKey()] || (time[dayKey()] = {});
+    day[site] = (day[site] || 0) + secs;
+    await store.set({ time });
   }
 
   // ---------- rendering ----------

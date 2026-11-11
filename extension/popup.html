@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  body{width:320px;margin:0;padding:14px;font-family:system-ui,sans-serif;font-size:13px;color:#222}
+  h1{font-size:15px;margin:0 0 10px}
+  h2{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#888;margin:14px 0 6px}
+  .stats{display:flex;gap:8px}
+  .stat{flex:1;background:#f3f4f8;border-radius:8px;padding:8px 10px}
+  .stat b{display:block;font-size:18px}
+  .item{padding:6px 0;border-bottom:1px solid #eee}
+  .item:last-child{border:0}
+  .meta{color:#888;font-size:12px}
+  .yes{color:#1a8f4c}.partly{color:#b7791f}.no{color:#c53030}.unrecorded{color:#999}
+  .empty{color:#999;padding:4px 0}
+  button{width:100%;margin-top:14px;padding:9px;border:0;border-radius:8px;background:#5b7cfa;color:#fff;font-size:13px;cursor:pointer}
+</style></head><body>
+<h1>Why Am I Here</h1>
+<div class="stats" id="stats"></div>
+<h2>Active now</h2><div id="active"></div>
+<h2>Recent</h2><div id="recent"></div>
+<button id="full">Open full history</button>
+<script src="popup.js"></script></body></html>
